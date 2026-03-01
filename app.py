@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS  # Разрешает запросы с других доменов
+from database import register_user
 
 app = Flask(__name__)
 CORS(app)  # Разрешаем кросс-доменные запросы
@@ -34,26 +35,32 @@ def register():
                 'error': 'Введите корректный email'
             }), 400
             
-        if not password or len(password) < 6:
+        if not password or len(password) < 8:
             return jsonify({
                 'success': False,
-                'error': 'Пароль должен быть минимум 6 символов'
+                'error': 'Пароль должен быть минимум 8 символов'
             }), 400
         
         # Здесь обычно сохранение в базу данных
         # Например, в SQLite, PostgreSQL и т.д.
         
-        print(f"Новый пользователь: {username}, {email}, {password}")
+        result = register_user(username, email, password, "пусто")
         
-        # Отправляем успешный ответ
-        return jsonify({
-            'success': True,
-            'message': 'Регистрация успешна!',
-            'user': {
-                'username': username,
-                'email': email
-            }
-        }), 200
+        # Отправляем успешный ответ, в случае если регистрация успешна
+        if result:
+            return jsonify({
+                'success': True,
+                'message': 'Регистрация успешна!',
+                'user': {
+                    'username': username,
+                    'email': email
+                }
+            }), 200
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Этот email уже занят или произошла ошибка базы данных'
+            }), 400
         
     except Exception as e:
         return jsonify({
