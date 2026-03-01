@@ -1,3 +1,4 @@
+import bcrypt
 import sqlite3 as sq
 
 with sq.connect("test.db") as con:
@@ -25,35 +26,50 @@ with sq.connect("test.db") as con:
     )""")
 
     def register_user(nickname, email, password, geo):
-        try:
-            cur.execute("INSERT INTO users (user_nickname, email, password, user_geolocation) VALUES (?, ?, ?, ?)", (nickname, email, password, geo))
+        if len(password) < 8:
+                print("Слишком короткий пароль. Минимум 8 символов")
+                return False
+            
+        if len(password) > 24:
+            print("Слишком длинный пароль. Максимум 24 символа")
+            return False
+        
+        if "@" not in email or "." not in email:
+            print("Ошибка: Почта введена неверно.")
+            return False
+        
+        try:            
+            hash = bcrypt.gensalt()
+            hashed_password = bcrypt.hashpw(password.encode("UTF-8"), hash)
+            cur.execute("INSERT INTO users (user_nickname, email, password, user_geolocation) VALUES (?, ?, ?, ?)", (nickname, email, hashed_password, geo))
             con.commit()
             print(f"Пользователь {nickname} добавлен в базу данных")
+            return True
+    
         except sq.IntegrityError:
             print("Ошибка: почта занята другим пользователем")
+            return False
 
     def login_user(email, password):
         try:
-            cur.execute("SELECT email, password FROM users WHERE email = ?", (email,))
+            cur.execute("SELECT user_id, password FROM users WHERE email = ?", (email,))
             result = cur.fetchone()
             if result is not None:
-                if result[1]==password:
+                if bcrypt.checkpw(password.encode("UTF-8"), result[1]):
                     print("Вы успешно авторизировались!")
-                    return True
+                    return result[0]
                 else:
                     print("Ошибка: Неверный логин или пароль.")
                     return False
             else:
                 print("Ошибка: Неверный логин или пароль.")
                 return False
+            
         except sq.Error as e:
             print(f"Ошибка: {e}")
             return False
-             
         
 
-    
-   
 
-    
+
 
