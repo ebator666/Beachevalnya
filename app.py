@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS  # Разрешает запросы с других доменов
 from database import register_user, login_user
+import hashlib
+import secrets
+import datetime
 
 app = Flask(__name__)
 CORS(app)  # Разрешаем кросс-доменные запросы
@@ -102,12 +105,13 @@ def login():
         user_id = login_user(email, password)
         
         if user_id:
+            token = hashlib.sha256(f"{user_id}{secrets.token_hex(8)}".encode()).hexdigest()
             # Успешный вход
             return jsonify({
                 'success': True,
                 'message': 'Вход выполнен успешно!',
                 'user_id': user_id,
-                'token': 'dummy-token-' + str(user_id)  # Простой токен для демо
+                'token': token 
             }), 200
         else:
             # Неудачный вход
