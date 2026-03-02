@@ -12,7 +12,6 @@ def create_db():
             email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL,
             user_geolocation TEXT NOT NULL,
-            rating REAL DEFAULT 5.0
         )""")
 
         cur.execute("""CREATE TABLE IF NOT EXISTS ads (
