@@ -100,8 +100,8 @@
             }
             
             // Валидация пароля
-            if (password.length < 6) {
-                showError('passwordError', 'Минимум 6 символов');
+            if (password.length < 8 || password.length > 24) {
+                showError('passwordError', 'Пароль должен быть от 8 до 24 символов');
                 isValid = false;
             }
             
