@@ -95,13 +95,6 @@
                 isValid = false;
             }
 
-            // Валидация email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showError('emailError', 'Введите корректный email');
-                isValid = false;
-            }
-
             // Валидация пароля
             if (password.length < 8 || password.length > 24) {
                 showError('passwordError', 'Пароль должен быть от 8 до 24 символов');
@@ -143,8 +136,7 @@
                         localStorage.setItem('auth_token', result.token);
                         console.log('Токен сохранен:', result.token);
                     }
-
-                    // ПЕРЕНАПРАВЛЕНИЕ НА СТРАНИЦУ С 3D ОБЪЕКТОМ
+                    
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1500);
