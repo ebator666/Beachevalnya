@@ -11,7 +11,7 @@ def create_db():
             user_nickname TEXT NOT NULL UNIQUE,
             email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL,
-            user_geolocation TEXT NOT NULL,
+            user_geolocation TEXT NOT NULL
         )""")
 
         cur.execute("""CREATE TABLE IF NOT EXISTS ads (
